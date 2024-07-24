@@ -5,9 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/user/user.schema';
 import { UserService } from 'src/user/user.service';
-import { forgotPasswordDto } from './dto/forgotPassword.dto';
-import { Subject } from 'rxjs';
-import nodemailer from 'nodemailer';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -25,43 +23,33 @@ export class AuthService {
     return bcrypt.compareSync(password, hashedPassword);
   }
 
-  async generateToken(user: UserDocument):Promise<string> {
-
-    const userId = user._id;
-    const token = this.jwtService.sign({ userId }, { expiresIn: '1h' });
-    await this.userService.updateUserById(userId, { token });
-    return token;
+  async generateToken(user: User): Promise<string> {
+    const payload = { email: user.email, sub: user._id };
+    return this.jwtService.sign(payload);
   }
 
-  async validateToken(token: string): Promise<UserDocument> {
+  async validateToken(token: string): Promise<User> {
     const payload = this.jwtService.verify(token);
     const user = await this.userService.fetchUserById(payload.userId);
    return user;
   }
 
-  async sendMail(value: { email: string; otp: any; }) {
-    const mailDetails = {
-      from: process.env.NODEMAILER_EMAIL,
-      to: value.email,
-      subject: 'Your Otp',
-      text: `Your otp is ${value.otp}`,
-    };
-    const transporter = nodemailer.createTransport({
-      service: 'Gmail',
-      host: process.env.NODEMAILER_HOST,
-      port: process.env.NODEMAILER_PORT,
-      secure: true, 
-      auth: {
-        user: process.env.NODEMAILER_EMAIL,
-        pass: process.env.NODEMAILER_PASSWORD,
-      },
-    });
-    transporter.sendMail(mailDetails, function (err: any, info: { response: any; }) {
-      if (err) {
-        console.error('Error occurred while sending email:', err);
-      } else {
-        console.log('Email sent successfully! Response:', info.response);
-      }
-    });
+  async generateOtp(): Promise<string> {
+    return crypto.randomInt(100000, 999999).toString();
+  }
+
+
+
+  private readonly FIXED_OTP = '123456';
+  async verifyOtp(user: any, otp: string): Promise<boolean> {
+    return otp === this.FIXED_OTP;
+  }
+
+  serializeUser(user:User){
+    return {
+      name: user.name,
+      email:user.email,
+      token:user.token
+    }
   }
 }
