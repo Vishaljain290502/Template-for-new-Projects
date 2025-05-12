@@ -1,6 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument } from 'mongoose';
 
+
+export enum Role {
+  Student = "student",
+  Admin = "admin",
+}
+
 @Schema()
 class locationDocument{
     type: {
@@ -20,8 +26,12 @@ class locationDocument{
 export class UserDocument{
 
     @Prop()
-    name:String;
+    firstName:String;
 
+    @Prop()
+    lastName:String;
+
+    
     @Prop()
     dob:Date;
 
@@ -30,6 +40,18 @@ export class UserDocument{
 
     @Prop({ required: true })
     password: string;
+
+    @Prop() 
+    hometown: string;
+
+    @Prop([String]) 
+    interests: string[];
+
+    @Prop() 
+    instagram: string;
+
+    @Prop() 
+    twitter: string;
 
     @Prop()
     token: string;
@@ -59,6 +81,16 @@ export class UserDocument{
         type: string;
         coordinates: [number, number];
     };
+
+    @Prop({ default: Role.Student }) 
+    role: Role; 
+
+    @Prop() 
+    consentToPublish: boolean;
+
+    
+    @Prop({ default: false }) 
+    isPremium: boolean;
 }
 
 export type User = HydratedDocument<UserDocument>;

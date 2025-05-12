@@ -1,7 +1,7 @@
 import { BadRequestException, Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from 'src/user/user.service';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { CreateUserDto } from 'src/user/dto/dto';
 import { LoginUserDto,forgotPasswordDto,ResetPasswordDto,VerifyPhoneDto,VerifyEmailDto } from './dto/auth-dto';
 import * as nodemailer from 'nodemailer';
 import { MailerService } from 'src/helper/mailer.service';

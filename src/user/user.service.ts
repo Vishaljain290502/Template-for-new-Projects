@@ -2,9 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './user.schema';
 import { Model, Types } from 'mongoose';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/dto';
 import { LoginUserDto } from 'src/auth/dto/auth-dto';
-import { UpdateUserDto } from './dto/update.user.dto';
+import { UpdateUserDto } from './dto/dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
